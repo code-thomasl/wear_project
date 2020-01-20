@@ -11,6 +11,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 
@@ -27,6 +29,7 @@ public class SendMessageActivity extends WearableActivity  implements View.OnCli
     private static final String TAG = "SendMessageActivity";
     private TextView mTextView;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,6 +37,8 @@ public class SendMessageActivity extends WearableActivity  implements View.OnCli
 
         Button sendMsgBck = findViewById(R.id.send);
         sendMsgBck.setOnClickListener((View.OnClickListener) this);
+
+        mTextView = findViewById(R.id.text_view_result);
 
 
         // Enables Always-on
@@ -52,7 +57,7 @@ public class SendMessageActivity extends WearableActivity  implements View.OnCli
         OkHttpClient okHttpClient = new OkHttpClient();
 
         MediaType JSON_TYPE = MediaType.parse("application/json; charset=utf-8");
-        String myJson =
+        /*String myJson =
                 "  {\n" +
                 "    \"student_id\": 20130039,\n" +
                 "    \"gps_lat\": 36.001,\n" +
@@ -60,30 +65,73 @@ public class SendMessageActivity extends WearableActivity  implements View.OnCli
                 "    \"student_message\": \"message3\"\n" +
                 "  }";
 
+
+        */
+
+        /*
+        String myJson = new StringBuilder()
+                .append("{")
+                .append("\"student_id\":\"20130039\",")
+                .append("\"gps_lat\":\"34.001\",")
+                .append("\"gps_long\":\"3.235\",")
+                .append("\"student_message\":\"message4\",")
+                .append("}").toString();
+        */
+
+        JSONObject postdata = new JSONObject();
+        try
+        {
+            postdata.put("student_id", "20130039");
+            postdata.put("gps_lat", "34.001");
+            postdata.put("gps_long", "3.235");
+            postdata.put("student_message", "message5");
+
+        } catch(JSONException e)
+        {
+            e.printStackTrace();
+        }
+
         //Création de la requête POST
-        Request myGetRequest = new Request.Builder()
+        RequestBody body = RequestBody.create(
+                MediaType.parse("application/json"),
+                postdata.toString()
+        );
+
+
+        Request myPostRequest = new Request.Builder()
                 .url("https://hmin309-embedded-systems.herokuapp.com/message-exchange/messages/")
-                .post(RequestBody.create(JSON_TYPE, myJson))
+                .post(body)
                 .build();
 
-        okHttpClient.newCall(myGetRequest).enqueue(new Callback() {
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                //le retour est effectué dans un thread différent
-                final String text = response.body().string();
 
+        okHttpClient.newCall(myPostRequest).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                String mMessage = e.getMessage().toString();
+                Log.w("failure Response", mMessage);
+                //call.cancel();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                //le retour est effectué dans un thread différent
+                //final String text = response.body().string();
+
+                String mMessage = response.body().string();
+                Log.e(TAG, mMessage);
+                Log.d(TAG, "[[Messsage has been posted]]");
+
+                /*
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        //textView.setText(text);
+                        //mTextView.setText(text);
                     }
                 });
+                 */
             }
 
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
 
-            }
         });
 
         Log.d(TAG, "Messsage has been posted");

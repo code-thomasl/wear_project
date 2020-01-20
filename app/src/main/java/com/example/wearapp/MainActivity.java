@@ -211,8 +211,8 @@ public class MainActivity extends WearableActivity implements View.OnClickListen
         @Override
         public void onLocationResult(LocationResult locationResult) {
             Location mLastLocation = locationResult.getLastLocation();
-            latTextView.setText(mLastLocation.getLatitude()+"");
-            lonTextView.setText(mLastLocation.getLongitude()+"");
+            //latTextView.setText(mLastLocation.getLatitude()+"");
+            //lonTextView.setText(mLastLocation.getLongitude()+"");
         }
     };
 
