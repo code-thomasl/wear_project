@@ -52,9 +52,8 @@ public class SendMessageActivity extends WearableActivity  implements View.OnCli
         OkHttpClient okHttpClient = new OkHttpClient();
 
         MediaType JSON_TYPE = MediaType.parse("application/json; charset=utf-8");
-        String myJson = "[\n" +
+        String myJson =
                 "  {\n" +
-                "    \"id\": 17,\n" +
                 "    \"student_id\": 20130039,\n" +
                 "    \"gps_lat\": 36.001,\n" +
                 "    \"gps_long\": 3.235,\n" +
