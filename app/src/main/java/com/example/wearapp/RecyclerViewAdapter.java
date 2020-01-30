@@ -19,6 +19,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private static final String TAG = "RecyclerViewAdapter";
 
     private ArrayList<String> mElementNames = new ArrayList<>();
+    private ArrayList<Float> mElementLong = new ArrayList<>();
+    private ArrayList<Float> mElementLat = new ArrayList<>();
+
+
     private Context mContext;
 
 
@@ -26,6 +30,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         TextView elementName;
         RelativeLayout parentLayout;
+        TextView elementLong;
+        TextView elementLat;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -35,8 +41,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         }
     }
 
-    public RecyclerViewAdapter(ArrayList<String> elementNames, Context context) {
+    public RecyclerViewAdapter(ArrayList<String> elementNames,ArrayList<Float> elementLong,ArrayList<Float> elementLat, Context context) {
         mElementNames = elementNames;
+        mElementLong = elementLong;
+        mElementLat = elementLat;
         mContext = context;
     }
 
@@ -58,7 +66,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "onClick, cliched on : " + mElementNames.get(position));
-
+                String geoString = "LONGITUDE: "  + mElementLong.get(position) + "LATITUDE: " + mElementLat.get(position);
                 Toast.makeText(mContext, mElementNames.get(position), Toast.LENGTH_SHORT).show();
             }
         });

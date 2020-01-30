@@ -62,6 +62,9 @@ public class MainActivity extends WearableActivity implements View.OnClickListen
 
     // Display results
     private ArrayList<String> mNames = new ArrayList<>();
+    private ArrayList<Float> mLong = new ArrayList<>();
+    private ArrayList<Float> mLat = new ArrayList<>();
+
     private TextView textViewResult;
     private TextView textViewResult2;
 
@@ -169,6 +172,7 @@ public class MainActivity extends WearableActivity implements View.OnClickListen
 
                     if (speed > SHAKE_THRESHOLD) {
                         //do something when device is shaken
+                        getMessages();
                         Log.d(TAG, "Device shaken");
                     }
 
@@ -301,6 +305,46 @@ public class MainActivity extends WearableActivity implements View.OnClickListen
         }
     }
 
+    public void getMessages() {
+        // Get request (@TO REFACTO)
+        OkHttpClient okHttpClient = new OkHttpClient();
+        Request myGetRequest = new Request.Builder()
+                .url("https://hmin309-embedded-systems.herokuapp.com/message-exchange/messages/")
+                .build();
+
+        okHttpClient.newCall(myGetRequest).enqueue(new Callback() {
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull okhttp3.Response response) throws IOException {
+                //le retour est effectué dans un thread différent
+                final String text = response.body().string();
+                final int statusCode = response.code();
+
+                final GsonBuilder gsonBuilder = new GsonBuilder();
+                final Gson gson = gsonBuilder.create();
+                //gson.fromJson(text, Message2.class);
+                //Message2 message = gson.fromJson(text, Message2.class);
+
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        //maybe need a updateElement() for onResume and inside onCreate when
+                        //shaking the Wear device.
+                        Message2[] message = gson.fromJson(text, Message2[].class);
+                        initElement(message);
+                        //textViewResult.setText(text);
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                textViewResult.setText("ECHEC");
+
+            }
+        });
+    }
+
     // function used to initialize elements, needs refactoring to incorporate other functions
     // currently in the onCreate
     private void initElement(Message2[] message) {
@@ -316,7 +360,7 @@ public class MainActivity extends WearableActivity implements View.OnClickListen
     private void initRecyclerView() {
         Log.d(TAG, "initRecyclerView: init reyclerview.");
         RecyclerView recyclerView = findViewById(R.id.message_list);
-        RecyclerViewAdapter adapter = new RecyclerViewAdapter(mNames, this);
+        RecyclerViewAdapter adapter = new RecyclerViewAdapter(mNames, mLong, mLat, this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }

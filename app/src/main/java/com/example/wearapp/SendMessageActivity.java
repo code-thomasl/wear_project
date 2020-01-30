@@ -6,11 +6,9 @@ import android.support.wearable.activity.WearableActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageButton;
+import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -28,7 +26,9 @@ public class SendMessageActivity extends WearableActivity  implements View.OnCli
 
     private static final String TAG = "SendMessageActivity";
     private TextView mTextView;
-
+    EditText mEdit;
+    private Student student;
+    private String messageToSend;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +37,20 @@ public class SendMessageActivity extends WearableActivity  implements View.OnCli
 
         Button sendMsgBck = findViewById(R.id.send);
         sendMsgBck.setOnClickListener((View.OnClickListener) this);
+
+        //Just an example for testing purpose
+        // student_id : should be generated randomly and saved
+        // gps_lat : use getLocation (see MainActivity)
+        // gps_long : use getLocation (see MainActivity)
+        // student_message : let user fill the form and get it back
+
+        /*
+        student.setStudent_id(20132491);
+        student.setGps_lat(34.001f);
+        student.setGps_long(3.235f);
+        student.setStudent_message("hello world");
+
+         */
 
         mTextView = findViewById(R.id.text_view_result);
 
@@ -78,13 +92,17 @@ public class SendMessageActivity extends WearableActivity  implements View.OnCli
                 .append("}").toString();
         */
 
+        mEdit = (EditText)findViewById(R.id.editText);
+
+        messageToSend = mEdit.getText().toString();
+
         JSONObject postdata = new JSONObject();
         try
         {
-            postdata.put("student_id", "20130039");
-            postdata.put("gps_lat", "34.001");
-            postdata.put("gps_long", "3.235");
-            postdata.put("student_message", "message5");
+            postdata.put("student_id", 20130040);
+            postdata.put("gps_lat", 65.0);
+            postdata.put("gps_long",  3.0);
+            postdata.put("student_message", messageToSend);
 
         } catch(JSONException e)
         {
